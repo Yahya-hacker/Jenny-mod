@@ -1,0 +1,138 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.jenny.character_logic": {
+      "initial_state": "default",
+      "states": {
+        "default": {
+          "animations": [
+            {
+              "idle": "query.is_on_ground && query.modified_move_speed < 0.1"
+            },
+            {
+              "walk": "query.is_on_ground && query.modified_move_speed >= 0.1 && query.modified_move_speed < 0.5"
+            },
+            {
+              "run": "query.is_on_ground && query.modified_move_speed >= 0.5"
+            },
+            {
+              "sit": "query.is_sitting"
+            }
+          ],
+          "transitions": [
+            {
+              "sequence_alpha_intro": "query.variant == 1"
+            },
+            {
+              "sequence_beta_start": "query.variant == 5"
+            }
+          ]
+        },
+        "sequence_alpha_intro": {
+          "animations": [
+            "blowjob_intro"
+          ],
+          "transitions": [
+            {
+              "sequence_alpha_loop": "query.any_animation_finished"
+            },
+            {
+              "default": "query.variant == 0"
+            }
+          ]
+        },
+        "sequence_alpha_loop": {
+          "animations": [
+            "blowjob_suck"
+          ],
+          "transitions": [
+            {
+              "sequence_alpha_thrust": "query.variant == 3"
+            },
+            {
+              "default": "query.variant == 0"
+            }
+          ]
+        },
+        "sequence_alpha_thrust": {
+          "animations": [
+            "blowjob_thrust"
+          ],
+          "transitions": [
+            {
+              "sequence_alpha_outro": "query.variant == 4"
+            },
+            {
+              "default": "query.variant == 0"
+            }
+          ]
+        },
+        "sequence_alpha_outro": {
+          "animations": [
+            "blowjob_cum"
+          ],
+          "transitions": [
+            {
+              "default": "query.any_animation_finished"
+            }
+          ],
+          "on_exit": [
+            "/execute as @s run function reset_variant"
+          ]
+        },
+        "sequence_beta_start": {
+          "animations": [
+            "doggy_start"
+          ],
+          "transitions": [
+            {
+              "sequence_beta_stage1": "query.any_animation_finished"
+            },
+            {
+              "default": "query.variant == 0"
+            }
+          ]
+        },
+        "sequence_beta_stage1": {
+          "animations": [
+            "doggy_slow"
+          ],
+          "transitions": [
+            {
+              "sequence_beta_stage2": "query.variant == 7"
+            },
+            {
+              "default": "query.variant == 0"
+            }
+          ]
+        },
+        "sequence_beta_stage2": {
+          "animations": [
+            "doggy_fast_soft"
+          ],
+          "transitions": [
+            {
+              "sequence_beta_finish": "query.variant == 9"
+            },
+            {
+              "default": "query.variant == 0"
+            }
+          ]
+        },
+        "sequence_beta_finish": {
+          "animations": [
+            "doggy_cum"
+          ],
+          "transitions": [
+            {
+              "default": "query.any_animation_finished"
+            }
+          ],
+          "on_exit": [
+            "/execute as @s run function reset_variant"
+          ]
+        }
+      }
+    }
+  }
+}

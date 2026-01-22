@@ -1,0 +1,49 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "sexmod:jenny",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/jenny/jenny_dressed"
+      },
+      "geometry": {
+        "default": "geometry.Jenny"
+      },
+      "animations": {
+        "idle": "animation.jenny.idle",
+        "walk": "animation.jenny.walk",
+        "run": "animation.jenny.run",
+        "sit": "animation.jenny.sit",
+        "blowjob_intro": "animation.jenny.blowjobintro",
+        "blowjob_suck": "animation.jenny.blowjobsuck",
+        "blowjob_thrust": "animation.jenny.blowjobthrust",
+        "blowjob_cum": "animation.jenny.blowjobcum",
+        "doggy_start": "animation.jenny.doggystart",
+        "doggy_slow": "animation.jenny.doggyslow",
+        "doggy_fast_soft": "animation.jenny.doggyfast_soft",
+        "doggy_fast_hard": "animation.jenny.doggyfast_hard",
+        "doggy_cum": "animation.jenny.doggycum",
+        "strip": "animation.jenny.strip",
+        "wave": "animation.jenny.wave"
+      },
+      "scripts": {
+        "animate": [
+          "character_logic"
+        ]
+      },
+      "animation_controllers": {
+        "character_logic": "controller.animation.jenny.character_logic"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "texture": "spawn_egg",
+        "texture_index": 0
+      }
+    }
+  }
+}
