@@ -5,7 +5,7 @@
       "identifier": "sexmod:jenny",
       "is_spawnable": true,
       "is_summonable": true,
-      "is_experimental": false,
+      "is_experimental": true,
       "scripts": {
         "animate": [
           "main_script"

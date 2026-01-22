@@ -4,7 +4,9 @@ Cross-reference animation bones with geometry bones
 Identifies missing bones and adds placeholder bones if needed
 """
 import json
+import sys
 from typing import Set, List, Dict
+from pathlib import Path
 
 def extract_animation_bones(animation_path: str) -> Set[str]:
     """Extract all unique bone identifiers from animation file"""
@@ -101,10 +103,18 @@ def add_missing_bones(geometry_path: str, missing_bones: Set[str], existing_bone
     
     print("Missing bones added successfully!")
 
-def cross_reference_bones():
+def cross_reference_bones(animation_path: str = None, geometry_path: str = None):
     """Main function to cross-reference animations with geometry"""
-    animation_path = '/home/runner/work/Jenny-mod/Jenny-mod/RP/animations/jenny/jenny.animation.json'
-    geometry_path = '/home/runner/work/Jenny-mod/Jenny-mod/RP/models/entity/jenny/jennydressed.geo.json'
+    # Use relative paths from script location if not provided
+    script_dir = Path(__file__).parent
+    
+    if animation_path is None:
+        animation_path = script_dir / 'RP/animations/jenny/jenny.animation.json'
+    if geometry_path is None:
+        geometry_path = script_dir / 'RP/models/entity/jenny/jennydressed.geo.json'
+    
+    animation_path = str(animation_path)
+    geometry_path = str(geometry_path)
     
     # Extract bone sets
     animation_bones = extract_animation_bones(animation_path)
@@ -128,4 +138,8 @@ def cross_reference_bones():
     print(f"  Missing bones: {len(missing_bones)}")
 
 if __name__ == '__main__':
-    cross_reference_bones()
+    # Allow command-line override
+    anim_path = sys.argv[1] if len(sys.argv) >= 2 else None
+    geo_path = sys.argv[2] if len(sys.argv) >= 3 else None
+    
+    cross_reference_bones(anim_path, geo_path)

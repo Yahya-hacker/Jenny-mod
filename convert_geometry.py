@@ -6,6 +6,7 @@ Recalculates all bone pivots to be relative to their parent
 import json
 import sys
 from typing import Dict, List, Tuple
+from pathlib import Path
 
 def calculate_relative_pivots(bones: List[Dict]) -> List[Dict]:
     """
@@ -83,7 +84,14 @@ def convert_geometry_to_1_16_0(input_path: str, output_path: str):
     print("Geometry conversion successful!")
 
 if __name__ == '__main__':
-    input_file = '/home/runner/work/Jenny-mod/Jenny-mod/assets/sexmod/geo/jenny/jennydressed.geo.json'
-    output_file = '/home/runner/work/Jenny-mod/Jenny-mod/RP/models/entity/jenny/jennydressed.geo.json'
+    # Use relative paths from script location
+    script_dir = Path(__file__).parent
+    input_file = script_dir / 'assets/sexmod/geo/jenny/jennydressed.geo.json'
+    output_file = script_dir / 'RP/models/entity/jenny/jennydressed.geo.json'
     
-    convert_geometry_to_1_16_0(input_file, output_file)
+    # Allow command-line override
+    if len(sys.argv) >= 3:
+        input_file = Path(sys.argv[1])
+        output_file = Path(sys.argv[2])
+    
+    convert_geometry_to_1_16_0(str(input_file), str(output_file))

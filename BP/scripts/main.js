@@ -107,7 +107,5 @@ function init() {
     world.sendMessage('§a[Jenny Mod] Script loaded successfully!');
 }
 
-// Initialize on world load
-system.runInterval(() => {
-    init();
-}, 1);
+// Initialize once on script load
+init();
