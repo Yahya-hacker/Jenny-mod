@@ -11,6 +11,7 @@ Usage:
     python3 validate_implementation.py [--verbose] [--fix-issues]
 """
 import json
+import re
 import sys
 import argparse
 from pathlib import Path
@@ -270,23 +271,19 @@ class AddonValidator:
                 for transition in state_def.get('transitions', []):
                     for target, condition in transition.items():
                         if 'query.variant ==' in condition:
-                            # Extract the number
-                            try:
-                                value = int(condition.split('==')[1].strip())
-                                variants.add(value)
-                            except (ValueError, IndexError):
-                                pass
+                            # Use regex for robust extraction
+                            match = re.search(r'query\.variant\s*==\s*(\d+)', condition)
+                            if match:
+                                variants.add(int(match.group(1)))
         
         # Also check default state transitions
         default_state = states.get('default', {})
         for transition in default_state.get('transitions', []):
             for target, condition in transition.items():
                 if prefix in target and 'query.variant ==' in condition:
-                    try:
-                        value = int(condition.split('==')[1].strip())
-                        variants.add(value)
-                    except (ValueError, IndexError):
-                        pass
+                    match = re.search(r'query\.variant\s*==\s*(\d+)', condition)
+                    if match:
+                        variants.add(int(match.group(1)))
         
         return variants
     

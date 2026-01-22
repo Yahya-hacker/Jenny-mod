@@ -78,10 +78,9 @@ def normalize_pivots_to_relative(bones: List[Dict]) -> List[Dict]:
             child_abs_pivot = bone_map[bone_name]['pivot']
             parent_abs_pivot = bone_map[parent_name]['pivot']
             
+            # Use list comprehension for concise relative pivot calculation
             relative_pivot = [
-                round(child_abs_pivot[0] - parent_abs_pivot[0], 6),
-                round(child_abs_pivot[1] - parent_abs_pivot[1], 6),
-                round(child_abs_pivot[2] - parent_abs_pivot[2], 6)
+                round(c - p, 6) for c, p in zip(child_abs_pivot, parent_abs_pivot)
             ]
             
             updated_bone['pivot'] = relative_pivot

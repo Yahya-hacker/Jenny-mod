@@ -7,6 +7,25 @@ import { world, system } from '@minecraft/server';
 import { ModalFormData, ActionFormData } from '@minecraft/server-ui';
 
 /**
+ * Button selection constants for maintainability
+ */
+const MenuButton = {
+    SEQUENCE_ALPHA: 0,
+    SEQUENCE_BETA: 1,
+    RESET: 2
+};
+
+/**
+ * Entity event constants
+ */
+const JennyEvent = {
+    START_ALPHA: 'start_sequence_alpha',
+    START_BETA: 'start_sequence_beta',
+    RESET: 'reset_variant',
+    ADVANCE: 'advance_sequence'
+};
+
+/**
  * Open the state selection menu for Jenny entity with button-based UI
  * @param {Player} player - The player opening the menu
  * @param {Entity} entity - The Jenny entity
@@ -27,16 +46,16 @@ async function openStateMenu(player, entity) {
         }
 
         switch (response.selection) {
-            case 0: // Execute Sequence Alpha
-                entity.runCommand('event entity @s start_sequence_alpha');
+            case MenuButton.SEQUENCE_ALPHA:
+                entity.runCommand(`event entity @s ${JennyEvent.START_ALPHA}`);
                 player.sendMessage('§a[Jenny] Started Sequence Alpha (Blowjob)');
                 break;
-            case 1: // Execute Sequence Beta
-                entity.runCommand('event entity @s start_sequence_beta');
+            case MenuButton.SEQUENCE_BETA:
+                entity.runCommand(`event entity @s ${JennyEvent.START_BETA}`);
                 player.sendMessage('§b[Jenny] Started Sequence Beta (Doggy)');
                 break;
-            case 2: // Initialize Reset
-                entity.runCommand('event entity @s reset_variant');
+            case MenuButton.RESET:
+                entity.runCommand(`event entity @s ${JennyEvent.RESET}`);
                 player.sendMessage('§c[Jenny] Reset to Default state');
                 break;
         }
