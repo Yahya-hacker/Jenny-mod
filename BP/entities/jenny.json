@@ -405,6 +405,46 @@
           ]
         }
       },
+      "set_variant_2": {
+        "remove": {
+          "component_groups": [
+            "variant_0_default",
+            "variant_1_alpha_intro",
+            "variant_3_alpha_thrust",
+            "variant_4_alpha_outro",
+            "variant_5_beta_start",
+            "variant_6_beta_stage1",
+            "variant_7_beta_stage2",
+            "variant_8_beta_stage3",
+            "variant_9_beta_finish"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "variant_2_alpha_loop"
+          ]
+        }
+      },
+      "set_variant_6": {
+        "remove": {
+          "component_groups": [
+            "variant_0_default",
+            "variant_1_alpha_intro",
+            "variant_2_alpha_loop",
+            "variant_3_alpha_thrust",
+            "variant_4_alpha_outro",
+            "variant_5_beta_start",
+            "variant_7_beta_stage2",
+            "variant_8_beta_stage3",
+            "variant_9_beta_finish"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "variant_6_beta_stage1"
+          ]
+        }
+      },
       "open_menu": {
         "run_command": {
           "command": [

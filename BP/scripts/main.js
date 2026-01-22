@@ -1,28 +1,76 @@
 /**
  * Jenny Mod - UI Script
  * Uses @minecraft/server-ui for manual state selection
+ * Implements MoLang State Machine UI with buttons for sequence control
  */
 import { world, system } from '@minecraft/server';
-import { ModalFormData } from '@minecraft/server-ui';
+import { ModalFormData, ActionFormData } from '@minecraft/server-ui';
 
 /**
- * Open the state selection menu for Jenny entity
+ * Open the state selection menu for Jenny entity with button-based UI
  * @param {Player} player - The player opening the menu
  * @param {Entity} entity - The Jenny entity
  */
 async function openStateMenu(player, entity) {
-    const modal = new ModalFormData()
+    const form = new ActionFormData()
         .title('§l§6Jenny - State Control')
+        .body('§7Select an action to control animation sequences:')
+        .button('§a Execute Sequence Alpha\n§7(Blowjob Animation)', 'textures/items/diamond')
+        .button('§b Execute Sequence Beta\n§7(Doggy Animation)', 'textures/items/gold_ingot')
+        .button('§c Initialize Reset\n§7(Return to Default)', 'textures/items/barrier');
+
+    try {
+        const response = await form.show(player);
+        
+        if (response.canceled || response.selection === undefined) {
+            return;
+        }
+
+        switch (response.selection) {
+            case 0: // Execute Sequence Alpha
+                entity.runCommand('event entity @s start_sequence_alpha');
+                player.sendMessage('§a[Jenny] Started Sequence Alpha (Blowjob)');
+                break;
+            case 1: // Execute Sequence Beta
+                entity.runCommand('event entity @s start_sequence_beta');
+                player.sendMessage('§b[Jenny] Started Sequence Beta (Doggy)');
+                break;
+            case 2: // Initialize Reset
+                entity.runCommand('event entity @s reset_variant');
+                player.sendMessage('§c[Jenny] Reset to Default state');
+                break;
+        }
+    } catch (error) {
+        console.warn('[Jenny] Error showing menu:', error);
+        player.sendMessage('§c[Jenny] Error: Could not open menu. Try again.');
+    }
+}
+
+/**
+ * Open advanced state selection with ModalFormData for more control
+ * @param {Player} player - The player opening the menu
+ * @param {Entity} entity - The Jenny entity
+ */
+async function openAdvancedMenu(player, entity) {
+    const modal = new ModalFormData()
+        .title('§l§6Jenny - Advanced Control')
         .dropdown(
             '§eSelect Animation Sequence:',
             [
-                'Default (Idle/Walk)',
-                'Sequence Alpha - Blowjob',
-                'Sequence Beta - Doggy'
+                '0: Default (Idle/Walk)',
+                '1: Sequence Alpha - Intro',
+                '2: Sequence Alpha - Loop',
+                '3: Sequence Alpha - Thrust',
+                '4: Sequence Alpha - Outro',
+                '5: Sequence Beta - Start',
+                '6: Sequence Beta - Stage 1',
+                '7: Sequence Beta - Stage 2',
+                '8: Sequence Beta - Stage 3',
+                '9: Sequence Beta - Finish'
             ],
             0
         )
-        .toggle('§cReset to Default', false);
+        .toggle('§cForce Reset First', true);
 
     try {
         const response = await modal.show(player);
@@ -31,49 +79,82 @@ async function openStateMenu(player, entity) {
             return;
         }
 
-        const [sequenceChoice, shouldReset] = response.formValues;
+        const [sequenceChoice, forceReset] = response.formValues;
         
-        // Handle reset
-        if (shouldReset) {
+        // Reset first if toggle is on
+        if (forceReset) {
             entity.runCommand('event entity @s reset_variant');
-            player.sendMessage('§aReset Jenny to default state');
-            return;
         }
 
-        // Handle sequence selection
-        switch (sequenceChoice) {
-            case 0: // Default
-                entity.runCommand('event entity @s set_variant_0');
-                player.sendMessage('§aSet to Default state');
-                break;
-            case 1: // Sequence Alpha
-                entity.runCommand('event entity @s set_variant_1');
-                player.sendMessage('§aStarted Sequence Alpha (Blowjob)');
-                break;
-            case 2: // Sequence Beta
-                entity.runCommand('event entity @s set_variant_5');
-                player.sendMessage('§aStarted Sequence Beta (Doggy)');
-                break;
+        // Map dropdown selection to variant events
+        const variantEvents = [
+            'set_variant_0',
+            'set_variant_1',
+            'set_variant_2',
+            'advance_sequence', // For variant 3, we need to be at 2 first
+            'advance_sequence', // For variant 4, we need to be at 3 first
+            'set_variant_5',
+            'set_variant_6',
+            'advance_sequence', // For variant 7
+            'advance_sequence', // For variant 8
+            'advance_sequence'  // For variant 9
+        ];
+
+        // Execute the event
+        if (sequenceChoice <= 2 || sequenceChoice === 5 || sequenceChoice === 6) {
+            entity.runCommand(`event entity @s ${variantEvents[sequenceChoice]}`);
+        } else {
+            // For higher variants, we need sequential advancement
+            player.sendMessage('§6[Jenny] Use regular interactions to advance through stages');
         }
+
+        player.sendMessage(`§a[Jenny] Set variant to ${sequenceChoice}`);
     } catch (error) {
-        console.warn('Error showing menu:', error);
-        player.sendMessage('§cError: Could not open menu');
+        console.warn('[Jenny] Error showing advanced menu:', error);
+        player.sendMessage('§c[Jenny] Error: Could not open menu');
     }
 }
 
 /**
- * Handle sneak-interact trigger
+ * Handle sneak-interact trigger via scriptevent
  */
 function registerInteractionHandler() {
     // Listen for custom script events
     system.afterEvents.scriptEventReceive.subscribe((event) => {
         if (event.id === 'jenny:open_menu') {
-            const player = event.sourceEntity;
-            const entity = event.initiator;
+            // Get the entity that sent the event and find nearby player
+            const source = event.sourceEntity;
             
-            if (player && entity) {
-                openStateMenu(player, entity);
+            if (!source) {
+                console.warn('[Jenny] No source entity for scriptevent');
+                return;
             }
+
+            // Find the nearest player to open menu for
+            const players = world.getAllPlayers();
+            let nearestPlayer = null;
+            let nearestDistance = Infinity;
+            
+            for (const player of players) {
+                if (player.dimension.id !== source.dimension.id) continue;
+                
+                const dx = player.location.x - source.location.x;
+                const dy = player.location.y - source.location.y;
+                const dz = player.location.z - source.location.z;
+                const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                
+                if (distance < nearestDistance && distance <= 5) {
+                    nearestDistance = distance;
+                    nearestPlayer = player;
+                }
+            }
+            
+            if (nearestPlayer) {
+                openStateMenu(nearestPlayer, source);
+            }
+        } else if (event.id === 'jenny:state_change') {
+            // Handle state change notifications
+            console.log(`[Jenny] State changed to: ${event.message}`);
         }
     });
 }
@@ -88,7 +169,10 @@ function registerManualSneakInteract() {
         
         // Check if interacting with Jenny while sneaking
         if (entity.typeId === 'sexmod:jenny' && player.isSneaking) {
-            openStateMenu(player, entity);
+            // Use a system run to avoid UI timing issues
+            system.run(() => {
+                openStateMenu(player, entity);
+            });
         }
     });
 }
@@ -103,8 +187,10 @@ function init() {
     registerInteractionHandler();
     registerManualSneakInteract();
     
-    // Test message
-    world.sendMessage('§a[Jenny Mod] Script loaded successfully!');
+    // Delayed startup message (after world loads)
+    system.runTimeout(() => {
+        world.sendMessage('§a[Jenny Mod] Script loaded successfully!');
+    }, 100);
 }
 
 // Initialize once on script load

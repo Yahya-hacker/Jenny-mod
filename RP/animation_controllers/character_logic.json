@@ -26,6 +26,9 @@
             {
               "sequence_beta_start": "query.variant == 5"
             }
+          ],
+          "on_entry": [
+            "/scriptevent jenny:state_change 0"
           ]
         },
         "sequence_alpha_intro": {
@@ -39,6 +42,9 @@
             {
               "default": "query.variant == 0"
             }
+          ],
+          "on_entry": [
+            "/event entity @s set_variant_2"
           ]
         },
         "sequence_alpha_loop": {
@@ -75,6 +81,9 @@
             {
               "default": "query.any_animation_finished"
             }
+          ],
+          "on_exit": [
+            "/event entity @s reset_variant"
           ]
         },
         "sequence_beta_start": {
@@ -88,6 +97,9 @@
             {
               "default": "query.variant == 0"
             }
+          ],
+          "on_entry": [
+            "/event entity @s set_variant_6"
           ]
         },
         "sequence_beta_stage1": {
@@ -109,6 +121,19 @@
           ],
           "transitions": [
             {
+              "sequence_beta_stage3": "query.variant == 8"
+            },
+            {
+              "default": "query.variant == 0"
+            }
+          ]
+        },
+        "sequence_beta_stage3": {
+          "animations": [
+            "doggy_fast_hard"
+          ],
+          "transitions": [
+            {
               "sequence_beta_finish": "query.variant == 9"
             },
             {
@@ -124,6 +149,9 @@
             {
               "default": "query.any_animation_finished"
             }
+          ],
+          "on_exit": [
+            "/event entity @s reset_variant"
           ]
         }
       }
